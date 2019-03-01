@@ -1,0 +1,57 @@
+- hosts: all
+  tasks:
+   -  name: make directory
+      command: "mkdir /home/ansibleuser/ankurmangal" 
+      ignore_errors: yes
+
+
+
+   -  name: clone git repository
+      git: 
+       repo:  https://github.com/OCSInventory-NG/UnixAgent
+       dest: /home/ansibleuser/ankurmangal
+       version: master
+      sudo: no
+      ignore_errors: yes
+      register: x
+   -  debug:
+        msg: "{{x}}"
+
+
+
+
+   -  name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400
+      sudo: yes
+      ignore_errors: yes
+      register: y
+   -  debug:
+        msg: "{{y}}"
+
+
+
+   -  name: installing ocsinventory-agent
+      apt:
+        name: ocsinventory-agent
+        state: present
+        ocs_url=http://10.0.1.147/ocsinventory
+      sudo: yes
+      register: z
+   -  debug:
+        msg: "{{z}}"
+ 
+
+
+   -  name: HTTP URL
+      set_fact: >
+        ocs_url=http://10.0.1.147/ocsinventory
+      register: z
+   -  debug:
+        msg: "{{z}}"
+
+
+   -  name: Final setup  
+      command: "sudo ocsinventory-agent -t TAG_NAME http://10.0.1.147/ocsinventory"
