@@ -1,21 +1,21 @@
 - hosts: all
   tasks:
    -  name: make directory
-      command: "mkdir /home/ansibleuser/ankurmangal" 
-      ignore_errors: yes
+      file:
+       path: /home/qainfotech/OCS
+       state: directory
 
 
 
    -  name: clone git repository
       git: 
        repo:  https://github.com/OCSInventory-NG/UnixAgent
-       dest: /home/ansibleuser/ankurmangal
+       dest: /home/qainfotech/OCS
        version: master
       sudo: no
-      ignore_errors: yes
-      register: x
+      register: gitstatus
    -  debug:
-        msg: "{{x}}"
+        msg: "{{gitstatus}}"
 
 
 
@@ -26,10 +26,9 @@
         update_cache: yes
         cache_valid_time: 86400
       sudo: yes
-      ignore_errors: yes
-      register: y
+      register: aptstatus
    -  debug:
-        msg: "{{y}}"
+        msg: "{{aptstatus}}"
 
 
 
@@ -37,21 +36,28 @@
       apt:
         name: ocsinventory-agent
         state: present
-        ocs_url=http://10.0.1.147/ocsinventory
       sudo: yes
-      register: z
+      register: ocsstatus
    -  debug:
-        msg: "{{z}}"
+        msg: "{{ocsstatus}}"
  
 
 
-   -  name: HTTP URL
-      set_fact: >
-        ocs_url=http://10.0.1.147/ocsinventory
-      register: z
+   -  name: configure file
+      blockinfile:
+       path: /etc/ocsinventory/ocsinventory-agent.cfg
+       block: |
+         server=http://10.0.1.147/ocsinventory
+      sudo: yes
+      register: filestatus
    -  debug:
-        msg: "{{z}}"
+        msg: "{{filestatus}}"
 
 
    -  name: Final setup  
-      command: "sudo ocsinventory-agent -t TAG_NAME http://10.0.1.147/ocsinventory"
+      command: "ocsinventory-agent -t Ubuntu http://10.0.1.147/ocsinventory"
+      sudo: yes 
+      register: status
+   -  debug:
+       msg: "{{status}}"
+
