@@ -60,4 +60,22 @@
       register: status
    -  debug:
        msg: "{{status}}"
+   
 
+
+
+   - name: Crontab 10:00 AM
+     cron:
+      user: "qainfotech"
+      minute: 00
+      hour: 10
+      job: "echo 'qainfotech' | sudo -S ocsinventory-agent"
+     sudo: yes  
+ 
+   - name: Crontab 04:00 PM  
+     cron:
+      user: "qainfotech"
+      minute: 00
+      hour: 16
+      job: "echo 'qainfotech' | sudo -S ocsinventory-agent"
+     sudo: yes
