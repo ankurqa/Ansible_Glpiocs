@@ -1,2 +1,2 @@
 # Glpiocs
-Ansible file for instll ocs inventory client 
+Ansible file for install ocs inventory client 
